@@ -1,0 +1,27 @@
+
+������������������������������������������������������������������������������������������������������������������������
+  �p�[�X����: 167 �`�����N / 8 �t�@�C��
+
+  �n���X�����g�h�~�K��.pdf: 15 �`�����N
+  ���N���戵�K��.pdf: 18 �`�����N
+  �����o������K��.pdf: 18 �`�����N
+  ���S�q���Ǘ��K��.pdf: 9 �`�����N
+  �A�ƋK��.pdf: 65 �`�����N
+  �c���������K��.pdf: 12 �`�����N
+  �玙�E���x�Ɠ��Ɋւ���K��.pdf: 15 �`�����N
+  �ʋΎ蓖�x���K��.pdf: 15 �`�����N
+������������������������������������������������������������������������������������������������������������������������
+
+20:31:17 [INFO] �Ώ�: 8 �t�@�C��
+Markdown �p�[�X:   0%|          | 0/8 [00:00<?, ?file/s]Markdown �p�[�X: 100%|##########| 8/8 [00:00<00:00, 1384.37file/s]
+20:31:17 [INFO] BM25 �C���f�b�N�X�\�z: 167 �`�����N
+20:31:17 [INFO] BM25 �ۑ����� �� bm25_index.pkl / bm25_docs.pkl
+20:31:17 [INFO] --skip-chroma: ChromaDB �������X�L�b�v
+Traceback (most recent call last):
+  File "C:\Users\detec\Documents\PlusValue\ollama-chatbot-dev\ollama-chatbot-dev\daihatsu_rag\ingest.py", line 399, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\detec\Documents\PlusValue\ollama-chatbot-dev\ollama-chatbot-dev\daihatsu_rag\ingest.py", line 387, in main
+    print("\n" + "\u2550" * 60)
+    ~~~~~^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'cp932' codec can't encode character '\u2550' in position 2: illegal multibyte sequence

@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python clean_final.py)",
+      "Bash(python -X utf8 clean_final.py)",
+      "Bash(grep -n \"行$\\\\|^う。\\\\|行\\\\n\" \"C:\\\\Users\\\\detec\\\\Documents\\\\PlusValue\\\\ollama-chatbot-dev\\\\ollama-chatbot-dev\\\\daihatsu_rag\\\\cleaned_final\\\\ハラスメント防止規程.md\")",
+      "Bash(grep -n \"行$\\\\|^う。\" \"C:\\\\Users\\\\detec\\\\Documents\\\\PlusValue\\\\ollama-chatbot-dev\\\\ollama-chatbot-dev\\\\daihatsu_rag\\\\cleaned_final\\\\ハラスメント防止規程.md\")",
+      "Bash(grep -n -B1 -A1 \"^.\\\\{1,10\\\\}$\" \"C:\\\\Users\\\\detec\\\\Documents\\\\PlusValue\\\\ollama-chatbot-dev\\\\ollama-chatbot-dev\\\\daihatsu_rag\\\\cleaned_final\\\\国内出張旅費規程.md\")",
+      "Bash(python ingest.py --dry-run)",
+      "Bash(pip install *)",
+      "Bash(python -c ' *)",
+      "Read(//c/Users/detec/.claude/projects/C--Users-detec-Documents-PlusValue-ollama-chatbot-dev-ollama-chatbot-dev/memory//**)",
+      "Read(//c/Users/detec/.claude/projects/C--Users-detec-Documents-PlusValue-ollama-chatbot-dev-ollama-chatbot-dev/memory/**)",
+      "Bash(python -m py_compile ingest.py)",
+      "Bash(python -m py_compile search_test.py)",
+      "Bash(python -m pip show chromadb langchain-chroma langchain-ollama langchain-core rank-bm25 tqdm)",
+      "Bash(python search_test.py --query \"有給休暇 取得日数\" --mode bm25 --top-k 5)",
+      "Bash(python search_test.py --query \"労働時間 1日何時間\" --mode bm25 --top-k 5)",
+      "Bash(python search_test.py --query \"休日出勤 代休\" --mode bm25 --top-k 5)"
+    ]
+  }
+}
