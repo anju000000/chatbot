@@ -3,8 +3,15 @@ from pathlib import Path
 
 from app.core.config import Settings
 
+# BM25 インデックスはプロセス起動時に1回だけ読み込む（リクエストごとの I/O を避ける）
+_bm25_cache: tuple | None = None
 
-def _load_bm25(settings: Settings):
+
+def _load_bm25(settings: Settings) -> tuple:
+    global _bm25_cache
+    if _bm25_cache is not None:
+        return _bm25_cache
+
     index_path = Path(settings.bm25_index_path)
     docs_path = Path(settings.bm25_docs_path)
     if not index_path.exists() or not docs_path.exists():
@@ -16,7 +23,8 @@ def _load_bm25(settings: Settings):
         bm25 = pickle.load(f)
     with open(docs_path, "rb") as f:
         docs = pickle.load(f)
-    return bm25, docs
+    _bm25_cache = (bm25, docs)
+    return _bm25_cache
 
 
 def _bm25_search(bm25, docs: list[dict], query: str, top_k: int) -> list[dict]:
@@ -78,11 +86,17 @@ def retrieve(query: str, settings: Settings) -> list[dict]:
     results: list[dict] = []
 
     if mode in ("bm25", "hybrid"):
+        # BM25 は必須パスなので例外をそのまま上げる
         bm25, docs = _load_bm25(settings)
         results.extend(_bm25_search(bm25, docs, query, top_k))
 
     if mode in ("vector", "hybrid"):
-        results.extend(_vector_search(settings, query, top_k))
+        # vector は任意パス（ChromaDB 未起動でも BM25 結果を返せるよう握りつぶす）
+        try:
+            results.extend(_vector_search(settings, query, top_k))
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).warning("vector_search skipped: %s", e)
 
     if mode == "hybrid":
         seen: set[str] = set()

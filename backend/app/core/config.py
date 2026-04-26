@@ -28,7 +28,7 @@ class Settings(BaseSettings):
     ollama_temperature: float = 0.7
 
     rag_enabled: bool = True
-    rag_mode: str = "hybrid"  # bm25 / vector / hybrid
+    rag_mode: str = "bm25"  # bm25 / vector / hybrid
     rag_top_k: int = 3
     chroma_host: str = "localhost"
     chroma_port: int = 8000
