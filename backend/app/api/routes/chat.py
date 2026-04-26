@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
 from app.core.config import Settings, get_settings
-from app.services.chat_service import run_chat
+from app.services.chat_service import run_chat_with_rag
 from app.services.llm_factory import get_chat_model
 
 router = APIRouter(prefix="/api/v1", tags=["chat"])
@@ -32,7 +32,7 @@ def post_chat(
         raise HTTPException(status_code=501, detail=str(e)) from e
     payload = [m.model_dump() for m in body.messages]
     try:
-        text = run_chat(llm, payload)
+        text = run_chat_with_rag(llm, payload, settings)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e)) from e
     return ChatResponse(content=text)

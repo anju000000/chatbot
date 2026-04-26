@@ -27,6 +27,15 @@ class Settings(BaseSettings):
     ollama_model: str = "llama3.2"
     ollama_temperature: float = 0.7
 
+    rag_enabled: bool = True
+    rag_mode: str = "hybrid"  # bm25 / vector / hybrid
+    rag_top_k: int = 3
+    chroma_host: str = "localhost"
+    chroma_port: int = 8000
+    chroma_collection: str = "daihatsu_regulations"
+    bm25_index_path: str = str(_REPO_ROOT / "daihatsu_rag" / "bm25_index.pkl")
+    bm25_docs_path: str = str(_REPO_ROOT / "daihatsu_rag" / "bm25_docs.pkl")
+
 
 @lru_cache
 def get_settings() -> Settings:
