@@ -1,8 +1,12 @@
+import logging
+
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from app.core.config import Settings
 from app.services.rag_service import retrieve
+
+logger = logging.getLogger(__name__)
 
 _ROLE_MAP: dict[str, type[BaseMessage]] = {
     "user": HumanMessage,
@@ -43,12 +47,19 @@ def _build_rag_system_prompt(chunks: list[dict]) -> str:
         context_parts.append(f"{header}\n{c['text']}")
     context = "\n\n".join(context_parts)
     return (
-        "あなたは就業規則・社内規程の専門アシスタントです。\n"
-        "以下の条文を参考にして質問に答えてください。\n"
-        "回答の末尾には必ず根拠となる条文の出典を「（規程名 条項番号）」の形式で明示してください。\n"
-        "例: （育児・介護休業等に関する規程 第13条）\n"
-        "条文に記載がない場合は「規則に記載がありません」と答えてください。\n\n"
-        f"--- 参考条文 ---\n{context}\n--- ここまで ---"
+        "あなたは就業規則・社内規程の専門アシスタントです。\n\n"
+        f"--- 参考条文 ---\n{context}\n--- ここまで ---\n\n"
+        "【回答ルール】\n"
+        "1. 上記の参考条文を根拠に、必ず具体的な内容（数値・日数・金額・手続き・条件など）を含めて答えること。\n"
+        "   条文番号だけを返してはいけない。必ず文章で説明すること。\n"
+        "2. 「〜できますか」「〜いけませんか」「〜ありますか」などYes/No型の質問には、\n"
+        "   回答の冒頭で必ず「はい」または「いいえ」を明示してから説明すること。\n"
+        "3. 回答の最後に必ず出典を書くこと。形式: 「（規程名 条項番号）」\n"
+        "   例: （育児・介護休業等に関する規程 第13条）\n"
+        "4. 参考条文に直接的な記述が見当たらない場合でも、関連する条文から合理的に推測して答えること。\n"
+        "   推測の場合は「規程上の明記はありませんが、〜と考えられます」と前置きすること。\n"
+        "   それでも全く手がかりがない場合のみ「規程に記載がありません。担当部署にご確認ください。」と答えること。\n"
+        "5. 挨拶や雑談には条文を使わず自然に返答し、出典は書かないこと。"
     )
 
 
@@ -61,8 +72,9 @@ def run_chat_with_rag(llm: BaseChatModel, messages: list[dict[str, str]], settin
     if query and settings.rag_enabled:
         try:
             chunks = retrieve(query, settings)
-        except Exception:
-            pass  # 検索失敗時はRAGなしで続行
+            logger.info("RAG retrieved %d chunks for query: %s", len(chunks), query[:50])
+        except Exception as e:
+            logger.error("RAG retrieval failed, falling back to no-context: %s", e)
 
     system_prompt = _build_rag_system_prompt(chunks)
 

@@ -40,7 +40,7 @@ if prompt := st.chat_input("メッセージを入力"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.spinner("応答を生成しています…"):
         try:
-            with httpx.Client(timeout=120.0) as client:
+            with httpx.Client(timeout=300.0) as client:
                 r = client.post(
                     f"{API_BASE}/api/v1/chat",
                     json={"messages": st.session_state.messages},

@@ -41,7 +41,7 @@ BM25_INDEX_PATH   = BASE_DIR / "bm25_index.pkl"
 BM25_DOCS_PATH    = BASE_DIR / "bm25_docs.pkl"
 
 CHROMA_HOST     = "localhost"
-CHROMA_PORT     = 8000
+CHROMA_PORT     = 8100
 COLLECTION_NAME = "daihatsu_regulations"
 
 DEFAULT_BATCH_SIZE = 64
@@ -179,10 +179,29 @@ def parse_markdown_to_chunks(md_path: Path) -> list[dict]:
 # BM25
 # ═══════════════════════════════════════════════════════════════════════════════
 
+def _make_tokenize():
+    """SudachiPy が使えれば形態素解析、なければ文字ユニグラム+バイグラムにフォールバック。"""
+    try:
+        from sudachipy import tokenizer as _st, dictionary as _sd
+        _sudachi = _sd.Dictionary().create()
+        _mode = _st.Tokenizer.SplitMode.C
+        log.info("SudachiPy: 形態素解析トークナイザを使用します")
+        def _tokenize(text: str) -> list[str]:
+            return [m.surface() for m in _sudachi.tokenize(text, _mode) if m.surface().strip()]
+        return _tokenize
+    except Exception:
+        log.info("SudachiPy: 未インストール — 文字ユニグラム+バイグラムにフォールバックします")
+        def _tokenize(text: str) -> list[str]:
+            chars = [c for c in text if not c.isspace()]
+            bigrams = [chars[i] + chars[i + 1] for i in range(len(chars) - 1)]
+            return chars + bigrams
+        return _tokenize
+
+
 def build_bm25_index(chunks: list[dict]) -> bool:
     """
     BM25 インデックスを pkl ファイルへ保存する。
-    日本語は文字単位トークナイズ（形態素解析なし）。
+    SudachiPy があれば形態素解析、なければ文字ユニグラム+バイグラム。
     戻り値: 成功なら True
     """
     try:
@@ -191,8 +210,10 @@ def build_bm25_index(chunks: list[dict]) -> bool:
         log.warning("rank-bm25 未インストール → BM25 スキップ (pip install rank-bm25)")
         return False
 
+    _tokenize = _make_tokenize()
+
     log.info(f"BM25 インデックス構築: {len(chunks)} チャンク")
-    tokenized = [list(c["text"]) for c in chunks]
+    tokenized = [_tokenize(c["text"]) for c in chunks]
     bm25      = BM25Okapi(tokenized)
 
     with open(BM25_INDEX_PATH, "wb") as f:
