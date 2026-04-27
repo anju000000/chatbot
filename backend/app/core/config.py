@@ -29,7 +29,7 @@ class Settings(BaseSettings):
 
     rag_enabled: bool = True
     rag_mode: str = "bm25"  # bm25 / vector / hybrid
-    rag_top_k: int = 4
+    rag_top_k: int = 5
     chroma_host: str = "localhost"
     chroma_port: int = 8100
     chroma_collection: str = "daihatsu_regulations"
