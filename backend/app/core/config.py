@@ -29,9 +29,9 @@ class Settings(BaseSettings):
 
     rag_enabled: bool = True
     rag_mode: str = "bm25"  # bm25 / vector / hybrid
-    rag_top_k: int = 3
+    rag_top_k: int = 4
     chroma_host: str = "localhost"
-    chroma_port: int = 8000
+    chroma_port: int = 8100
     chroma_collection: str = "daihatsu_regulations"
     bm25_index_path: str = str(_REPO_ROOT / "daihatsu_rag" / "bm25_index.pkl")
     bm25_docs_path: str = str(_REPO_ROOT / "daihatsu_rag" / "bm25_docs.pkl")

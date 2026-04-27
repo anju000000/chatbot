@@ -15,6 +15,7 @@ import re
 import sys
 import pickle
 import argparse
+import logging
 from pathlib import Path
 
 # ── パス設定（ingest.py と合わせる）─────────────────────────────────────────
@@ -22,12 +23,28 @@ BM25_INDEX_PATH = Path(__file__).parent / "bm25_index.pkl"
 BM25_DOCS_PATH  = Path(__file__).parent / "bm25_docs.pkl"
 DEFAULT_TOP_K   = 3
 
-# ── 同義語辞書（将来の拡張ポイント）─────────────────────────────────────────
-# 例: SYNONYMS = {"休暇": ["有給", "年休"], "賃金": ["給与", "給料"]}
-SYNONYMS: dict[str, list[str]] = {}
-
 # 表示幅（端末幅に合わせて調整可）
 _WIDTH = 66
+
+log = logging.getLogger(__name__)
+
+# ── トークナイザ（ingest.py と必ず揃える）────────────────────────────────────
+_sudachi = None
+_SUDACHI_MODE = None
+try:
+    from sudachipy import tokenizer as _st, dictionary as _sd
+    _sudachi = _sd.Dictionary().create()
+    _SUDACHI_MODE = _st.Tokenizer.SplitMode.C
+except Exception:
+    pass
+
+
+def _tokenize(text: str) -> list[str]:
+    if _sudachi is not None:
+        return [m.surface() for m in _sudachi.tokenize(text, _SUDACHI_MODE) if m.surface().strip()]
+    chars = [c for c in text if not c.isspace()]
+    bigrams = [chars[i] + chars[i + 1] for i in range(len(chars) - 1)]
+    return chars + bigrams
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -136,8 +153,8 @@ def search(bm25, docs: list[dict], query: str, top_k: int, filters: Filters) -> 
     if not target_indices:
         return []
 
-    # ② BM25 スコア算出（文字単位トークナイズ、形態素解析なし）
-    all_scores = bm25.get_scores(list(query))
+    # ② BM25 スコア算出（ingest.py と同じトークナイザを使用）
+    all_scores = bm25.get_scores(_tokenize(query))
 
     # ③ 絞り込み済みチャンクのみランキング
     ranked = sorted(

@@ -16,7 +16,22 @@
       "Bash(python -m pip show chromadb langchain-chroma langchain-ollama langchain-core rank-bm25 tqdm)",
       "Bash(python search_test.py --query \"有給休暇 取得日数\" --mode bm25 --top-k 5)",
       "Bash(python search_test.py --query \"労働時間 1日何時間\" --mode bm25 --top-k 5)",
-      "Bash(python search_test.py --query \"休日出勤 代休\" --mode bm25 --top-k 5)"
+      "Bash(python search_test.py --query \"休日出勤 代休\" --mode bm25 --top-k 5)",
+      "Read(//c/temp/**)",
+      "Bash(python -c \"import ast, sys; ast.parse\\(open\\('daihatsu_rag/search_test.py'\\).read\\(\\)\\); print\\('syntax OK'\\)\")",
+      "PowerShell(Get-Command gh -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-ChildItem \"C:\\\\Program Files\\\\GitHub CLI\\\\gh.exe\" -ErrorAction SilentlyContinue; Get-ChildItem \"$env:LOCALAPPDATA\\\\Programs\\\\GitHub CLI\\\\gh.exe\" -ErrorAction SilentlyContinue; Get-ChildItem \"$env:ProgramFiles\\\\GitHub CLI\\\\\" -ErrorAction SilentlyContinue)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(ollama list *)",
+      "Read(//c/Users/detec/Documents/PlusValue/ollama-chatbot-dev/**)",
+      "Bash(.venv/Scripts/python -c \"import openpyxl; print\\('ok'\\)\")",
+      "Bash(.venv/Scripts/python -c \"import requests; print\\('ok'\\)\")",
+      "Bash(.venv/Scripts/pip install *)",
+      "Bash(.venv/Scripts/python -)",
+      "Bash(.venv/Scripts/python -c ' *)",
+      "Bash(.venv/Scripts/python score2.py)",
+      "Bash('C:\\\\Users\\\\detec\\\\Documents\\\\PlusValue\\\\ollama-chatbot-dev\\\\.venv\\\\Scripts\\\\python.exe' -c ' *)"
     ]
   }
 }
